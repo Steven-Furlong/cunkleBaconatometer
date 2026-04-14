@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Baconato-meter Retro</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Archivo+Black&display=swap');
+
+        :root {
+            --wendys-red: #e21a22;
+            --wendys-yellow: #fffa37;
+        }
+
+        body {
+            background-color: rgba(0, 0, 0, 0); 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Archivo Black', sans-serif;
+        }
+
+        .sign-container {
+            text-align: center;
+            width: 500px;
+        }
+
+        .header-red {
+            background-color: var(--wendys-red);
+            color: white;
+            padding: 15px;
+            border: 6px solid black;
+            margin-bottom: 20px;
+            box-shadow: 8px 8px 0px rgba(0,0,0,0.2);
+            /* Standard skew */
+            transform: skewX(-5deg);
+        }
+
+        .header-red h1 {
+            margin: 0;
+            font-size: 34px;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            text-shadow: 4px 4px 0px black;
+            font-style: italic;
+        }
+
+        .logo-frame {
+            margin: 20px auto;
+            min-height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #wendys-logo {
+            width: 380px;
+            filter: grayscale(100%) brightness(30%) contrast(80%);
+            transition: filter 0.6s ease-in-out, transform 0.3s ease-in-out;
+        }
+
+        /* --- STANDARD CONCAVE YELLOW BAR --- */
+        .retro-yellow-bar {
+            background-color: black; /* This acts as the border */
+            padding: 6px; 
+            margin-top: 20px;
+            position: relative;
+            box-shadow: 8px 8px 0px rgba(0,0,0,0.2);
+            /* Standard way to cut corners: clip-path */
+            /* We use a path that draws the rectangle but arcs inward at corners */
+            clip-path: path("M 25 0 L 475 0 A 25 25 0 0 0 500 25 L 500 125 A 25 25 0 0 0 475 150 L 25 150 A 25 25 0 0 0 0 125 L 0 25 A 25 25 0 0 0 25 0 Z");
+            width: 500px;
+            height: 150px;
+        }
+
+        /* Inner Yellow Content */
+        .yellow-content {
+            background-color: var(--wendys-yellow);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            clip-path: path("M 22 0 L 472 0 A 22 22 0 0 0 494 22 L 494 122 A 22 22 0 0 0 472 144 L 22 144 A 22 22 0 0 0 0 122 L 0 22 A 22 22 0 0 0 22 0 Z");
+        }
+
+        /* The white decorative line */
+        .inner-outline {
+            position: absolute;
+            top: 12px; left: 12px; right: 12px; bottom: 12px;
+            border: 3px solid white;
+            pointer-events: none;
+            clip-path: path("M 20 0 L 450 0 A 20 20 0 0 0 470 20 L 470 100 A 20 20 0 0 0 450 120 L 20 120 A 20 20 0 0 0 0 100 L 0 20 A 20 20 0 0 0 20 0 Z");
+        }
+
+        .amount-text {
+            font-family: 'Alfa Slab One', cursive;
+            font-size: 44px;
+            color: black;
+            margin: 0;
+            z-index: 2;
+            letter-spacing: -1px;
+        }
+
+        #current-amt {
+            color: var(--wendys-red);
+        }
+
+        .goal-achieved {
+            animation: pulse-glow 1.5s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            from {
+                filter: grayscale(0%) brightness(110%) drop-shadow(0 0 10px #fff) drop-shadow(0 0 20px var(--wendys-red));
+                transform: scale(1);
+            }
+            to {
+                filter: grayscale(0%) brightness(120%) drop-shadow(0 0 25px #fff) drop-shadow(0 0 45px var(--wendys-red));
+                transform: scale(1.06);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sign-container">
+    <div class="header-red">
+        <h1>BACONATO-METER</h1>
+    </div>
+
+    <div class="logo-frame">
+        <img src="wendys-logo.png" id="wendys-logo" alt="Wendy's Logo">
+    </div>
+
+    <div class="retro-yellow-bar">
+        <div class="yellow-content">
+            <div class="inner-outline"></div>
+            <div class="amount-text">
+                <span id="current-amt">$0.00</span> / $25.00
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let current = 0;
+    const goal = 25;
+
+    window.addEventListener('click', () => {
+        if (current < goal) {
+            current += 2.50;
+            if (current > goal) current = goal;
+            updateUI();
+        }
+    });
+
+    function updateUI() {
+        const logo = document.getElementById('wendys-logo');
+        const text = document.getElementById('current-amt');
+        const percent = (current / goal) * 100;
+        text.innerText = '$' + current.toFixed(2);
+        logo.classList.remove('goal-achieved');
+
+        if (percent >= 100) {
+            logo.style.filter = "grayscale(0%) brightness(110%) contrast(110%)";
+            logo.classList.add('goal-achieved');
+        } 
+        else if (percent >= 75) logo.style.filter = "grayscale(0%) brightness(100%) contrast(100%)";
+        else if (percent >= 50) logo.style.filter = "grayscale(40%) brightness(95%) contrast(95%)";
+        else if (percent >= 25) logo.style.filter = "grayscale(75%) brightness(75%) contrast(90%)";
+        else if (percent >= 10) logo.style.filter = "grayscale(90%) brightness(55%) contrast(85%)";
+        else logo.style.filter = "grayscale(100%) brightness(30%) contrast(80%)";
+    }
+</script>
+
+</body>
+</html>
